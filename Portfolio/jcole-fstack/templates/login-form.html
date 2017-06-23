@@ -1,0 +1,54 @@
+{% extends "base.html" %} {% block content %}
+
+<head>
+  <title>Login</title>
+  <style type="text/css">
+    .label {
+      text-align: right
+    }
+
+    .error {
+      color: red
+    }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <link type="text/css" rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+</head>
+
+<body class="body-blog">
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <ul class="nav navbar-nav navbar-right" id="navigation">
+        <li><a href="/">Home</a></li>
+        {% if user %}
+        <li><a href="/logout">Logout</a></li>
+        <li><a href="/blog/newpost">New Post</a></li>
+        {% else %}
+        <li><a href="/login">Login</a></li>
+        <li><a href="/signup">Signup</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+  <h2 class="text-center">Login</h2>
+  <form method="post">
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" class="form-control" name="username" autofocus placeholder="Username" value="{{username}}">
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" class="form-control" name="password" placeholder="Password" value="">
+    </div>
+    <div class="error">
+      {{error}}
+    </div>
+    <input type="submit" class="btn btn-primary btn-xs">
+  </form>
+</body>
+
+{% endblock %}

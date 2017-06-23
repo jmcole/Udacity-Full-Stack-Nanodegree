@@ -1,6 +1,8 @@
+#!/usr/bin/env python2.7
+# PYTHON 2
 #
 # Database access functions for the web analysis log
-# http://www.cleancss.com/sql-beautify/
+#
 
 import psycopg2
 

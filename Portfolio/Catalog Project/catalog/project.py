@@ -1,4 +1,5 @@
-# Flora Catalog Application. Developed by John Cole in Udacity Full-Stack Nanodegree Program
+# Flora Catalog Application. Developed by John Cole in Udacity Full-Stack
+# Nanodegree Program through Back-End and Databases projects.
 
 from flask import Flask, render_template, request, redirect,\
     jsonify, url_for, flash

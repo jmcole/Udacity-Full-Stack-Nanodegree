@@ -1,8 +1,7 @@
-# Flora Catalog Application. Developed by John Cole in Udacity Full-Stack
-# Nanodegree Program through Back-End and Databases projects.
+# Flora Catalog Application. Developed by John Cole in Udacity Full-Stack Nanodegree Program
 
-from flask import Flask, render_template, request, redirect,\
-    jsonify, url_for, flash
+from flask import (Flask, render_template, request, redirect,
+    jsonify, url_for, flash)
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Park, FloraList, User
@@ -15,6 +14,7 @@ import httplib2
 import json
 from flask import make_response
 import requests
+from functools import wraps
 
 app = Flask(__name__)
 
@@ -28,6 +28,14 @@ Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' not in login_session:
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.route('/login')
@@ -220,10 +228,9 @@ def showParks():
 
 
 @app.route('/park/new/', methods=['GET', 'POST'])
+@login_required
 def newPark():
     # Create a new park
-    if 'username' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
         newPark = Park(
             name=request.form['name'], user_id=login_session['user_id'])
@@ -236,12 +243,11 @@ def newPark():
 
 
 @app.route('/park/<int:park_id>/edit/', methods=['GET', 'POST'])
+@login_required
 def editPark(park_id):
     # Edit Park
     editedPark = session.query(
         Park).filter_by(id=park_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
     if editedPark.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized \
                 to edit this park. Please create your own park in order to \
@@ -256,12 +262,11 @@ def editPark(park_id):
 
 
 @app.route('/park/<int:park_id>/delete/', methods=['GET', 'POST'])
+@login_required
 def deletePark(park_id):
     # Delete a park
     parkToDelete = session.query(
         Park).filter_by(id=park_id).one()
-    if 'username' not in login_session:
-        return redirect('/login')
     if parkToDelete.user_id != login_session['user_id']:
         return "<script>function myFunction() {alert('You are not authorized to\
             delete this park. Please create your own park in order to \
@@ -293,10 +298,9 @@ def showFlora(park_id):
 
 
 @app.route('/park/<int:park_id>/floralist/new/', methods=['GET', 'POST'])
+@login_required
 def newFloraList(park_id):
     # Create a new floralist item
-    if 'username' not in login_session:
-        return redirect('/login')
     park = session.query(Park).filter_by(id=park_id).one()
     if login_session['user_id'] != park.user_id:
         return "<script>function myFunction() {alert('You are not authorized \
@@ -319,17 +323,16 @@ def newFloraList(park_id):
 
 @app.route('/park/<int:park_id>/floralist/<int:floralist_id>/edit',
            methods=['GET', 'POST'])
+@login_required
 def editFloraList(park_id, floralist_id):
     # Edit a floralist item
-    if 'username' not in login_session:
-        return redirect('/login')
     editedItem = session.query(FloraList).filter_by(id=floralist_id).one()
     park = session.query(Park).filter_by(id=park_id).one()
     if login_session['user_id'] != park.user_id:
         return "<script>function myFunction() {alert('You are not authorized \
                 edit floralist items to this park. Please create your own park\
-                 in order to edit items.');}</script><body \
-                  onload='myFunction()''>"
+                in order to edit items.');}</script><body \
+                onload='myFunction()''>"
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -350,10 +353,9 @@ def editFloraList(park_id, floralist_id):
 
 @app.route('/park/<int:park_id>/floralist/<int:floralist_id>/delete',
            methods=['GET', 'POST'])
+@login_required
 def deleteFloraList(park_id, floralist_id):
     # Delete a floralist item
-    if 'username' not in login_session:
-        return redirect('/login')
     park = session.query(Park).filter_by(id=park_id).one()
     itemToDelete = session.query(FloraList).filter_by(id=floralist_id).one()
     if login_session['user_id'] != park.user_id:
